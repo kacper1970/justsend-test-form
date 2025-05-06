@@ -1,40 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Test SMS - ENERTIA</title>
-</head>
-<body>
-  <h2>Wyślij testowego SMS-a</h2>
-  <form id="smsForm">
-    <label>Numer telefonu (np. +48123456789):</label><br>
-    <input type="text" id="phone" required><br><br>
+<form id="smsForm">
+  <input type="text" id="phone" placeholder="Numer telefonu" required>
+  <textarea id="text" placeholder="Treść wiadomości" required></textarea>
+  <button type="submit">Wyślij SMS</button>
+</form>
 
-    <label>Treść wiadomości:</label><br>
-    <textarea id="text" required></textarea><br><br>
+<script>
+document.getElementById('smsForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const phone = document.getElementById('phone').value;
+  const text = document.getElementById('text').value;
 
-    <button type="submit">Wyślij</button>
-  </form>
-
-  <h3>Wynik:</h3>
-  <pre id="result"></pre>
-
-  <script>
-    document.getElementById("smsForm").onsubmit = function (e) {
-      e.preventDefault();
-      fetch("https://justsend-sms-api.onrender.com/send_sms", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          phone: document.getElementById("phone").value,
-          text: document.getElementById("text").value
-        })
-      })
-      .then(response => response.text())
-      .then(data => document.getElementById("result").textContent = data)
-      .catch(err => document.getElementById("result").textContent = "Błąd: " + err);
-    };
-  </script>
-</body>
-</html>
+  fetch('https://justsend-sms-api.onrender.com/send_sms', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ phone, text })
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert(data.message || 'Wiadomość została wysłana.');
+  })
+  .catch(error => {
+    console.error('Błąd:', error);
+    alert('Wystąpił błąd podczas wysyłania wiadomości.');
+  });
+});
+</script>
